@@ -26,6 +26,10 @@ rules:
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["create","delete","get","list","patch","update","watch"]
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
@@ -39,6 +43,31 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: jenkins
+---
+# Allows jenkins to create persistent volumes
+# This cluster role binding allows anyone in the "manager" group to read secrets in any namespace.
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: jenkins-crb
+subjects:
+- kind: ServiceAccount
+  namespace: default
+  name: jenkins
+roleRef:
+  kind: ClusterRole
+  name: jenkinsclusterrole
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+  name: jenkinsclusterrole
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["create","delete","get","list","patch","update","watch"]
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -57,7 +86,7 @@ spec:
     spec:
       containers:
         - name: jenkins
-          image: myjenkins:77
+          image: myjenkins:latest
           env:
             - name: JAVA_OPTS
               value: -Djenkins.install.runSetupWizard=false
