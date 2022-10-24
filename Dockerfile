@@ -1,4 +1,4 @@
-from jenkins/jenkins:2.282-alpine
+from jenkins/jenkins:2.332.3-lts-alpine
 USER root
 # Pipeline
 RUN /usr/local/bin/install-plugins.sh workflow-aggregator && \
