@@ -9,6 +9,7 @@ RUN /usr/local/bin/install-plugins.sh workflow-aggregator && \
     /usr/local/bin/install-plugins.sh kubernetes && \
     /usr/local/bin/install-plugins.sh docker-workflow && \
     /usr/local/bin/install-plugins.sh kubernetes-cli && \
+    /usr/local/bin/install-plugins.sh pipeline-stage-step:296.v5f6908f017a_5 && \
     /usr/local/bin/install-plugins.sh github-branch-source
 
 # install Maven, Java, Docker, AWS
