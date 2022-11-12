@@ -1,16 +1,18 @@
-from jenkins/jenkins:2.332.3-lts-alpine
+FROM jenkins/jenkins:2.377-alpine
+
 USER root
+
 # Pipeline
-RUN /usr/local/bin/install-plugins.sh workflow-aggregator && \
-    /usr/local/bin/install-plugins.sh github && \
-    /usr/local/bin/install-plugins.sh ws-cleanup && \
-    /usr/local/bin/install-plugins.sh greenballs && \
-    /usr/local/bin/install-plugins.sh simple-theme-plugin && \
-    /usr/local/bin/install-plugins.sh kubernetes && \
-    /usr/local/bin/install-plugins.sh docker-workflow && \
-    /usr/local/bin/install-plugins.sh kubernetes-cli && \
-    /usr/local/bin/install-plugins.sh pipeline-stage-step:296.v5f6908f017a_5 && \
-    /usr/local/bin/install-plugins.sh github-branch-source
+RUN jenkins-plugin-cli -p workflow-aggregator && \
+    jenkins-plugin-cli -p github && \
+    jenkins-plugin-cli -p ws-cleanup && \
+    jenkins-plugin-cli -p greenballs && \
+    jenkins-plugin-cli -p simple-theme-plugin && \
+    jenkins-plugin-cli -p kubernetes && \
+    jenkins-plugin-cli -p docker-workflow && \
+    jenkins-plugin-cli -p kubernetes-cli && \
+    jenkins-plugin-cli -p pipeline-stage-view:2.27 && \
+    jenkins-plugin-cli -p github-branch-source
 
 # install Maven, Java, Docker, AWS
 RUN apk add --no-cache maven \
