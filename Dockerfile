@@ -13,7 +13,7 @@ RUN /usr/local/bin/install-plugins.sh workflow-aggregator && \
 
 # install Maven, Java, Docker, AWS
 RUN apk add --no-cache maven \
-    openjdk8 \
+    openjdk17 \
     docker \
     gettext
 
