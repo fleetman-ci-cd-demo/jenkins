@@ -1,29 +1,26 @@
-from jenkins/jenkins:2.332.3-lts-alpine
+from jenkins/jenkins:2.441-alpine-jdk17
 USER root
 # Pipeline
-RUN /usr/local/bin/install-plugins.sh workflow-aggregator && \
-    /usr/local/bin/install-plugins.sh github && \
-    /usr/local/bin/install-plugins.sh ws-cleanup && \
-    /usr/local/bin/install-plugins.sh greenballs && \
-    /usr/local/bin/install-plugins.sh simple-theme-plugin && \
-    /usr/local/bin/install-plugins.sh kubernetes && \
-    /usr/local/bin/install-plugins.sh docker-workflow && \
-    /usr/local/bin/install-plugins.sh kubernetes-cli && \
-    /usr/local/bin/install-plugins.sh github-branch-source
 
-# install Maven, Java, Docker, AWS
+
+# RUN jenkins-plugin-cli --plugins "workflow-aggregator github ws-cleanup greenballs simple-theme-plugin kubernetes docker-workflow kubernetes-cli github-branch-source" 
+RUN jenkins-plugin-cli --plugins github:1.34.4 \
+                                 workflow-aggregator:581.v0c46fa_697ffd \
+                                 ws-cleanup:0.42 \
+                                 simple-theme-plugin:103.va_161d09c38c7 \
+                                 kubernetes:1.30.10 \
+                                 pipeline-stage-view:2.24 \
+                                 github-branch-source:1677.v731f745ea_0cf 
+
+# install Maven, Java, Docker
 RUN apk add --no-cache maven \
     openjdk17 \
     docker \
     gettext
 
 # Kubectl
-RUN  wget https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
-
-# Need to ensure the gid here matches the gid on the host node. We ASSUME (hah!) this
-# will be stable....keep an eye out for unable to connect to docker.sock in the builds
-# RUN delgroup ping && delgroup docker && addgroup -g 999 docker && addgroup jenkins docker
+RUN     curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && chmod +x ./kubectl && mv ./kubectl /usr/local/bin/kubectl
 
 # See https://github.com/kubernetes/minikube/issues/956.
-# THIS IS FOR MINIKUBE TESTING ONLY - it is not production standard (we're running as root!)
+# THIS IS FOR TESTING ONLY - it is not production standard (we're running as root!)
 RUN chown -R root "$JENKINS_HOME" /usr/share/jenkins/ref
